@@ -8,6 +8,9 @@ include(cmake/findDependencies.cmake      REQUIRED)
 include(cmake/compilerDefinitions.cmake   REQUIRED)
 include(cmake/compilerOptions.cmake       REQUIRED)
 
+include(GenerateExportHeader)
+
 add_subdirectory(src)
+add_subdirectory(app)
 
 include(cmake/printInfo.cmake             REQUIRED)

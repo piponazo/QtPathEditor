@@ -14,8 +14,8 @@ list(APPEND CMAKE_PREFIX_PATH "${EXTERNAL_DIR}")
 ###########################################
 
 find_program(QT_QMAKE_EXECUTABLE NAMES qmake-qt4)
-find_package(Qt4 COMPONENTS QtGui QtNetwork QtXml QtOpenGL QtTest QtScript QtSvg QtDeclarative REQUIRED)
-include_directories(SYSTEM ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
+find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+#include_directories(SYSTEM ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
 
 ###########################################
 # Setup Google Test Framework

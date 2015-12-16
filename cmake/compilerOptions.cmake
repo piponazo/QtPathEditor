@@ -21,6 +21,8 @@ else()
     message(FATAL_ERROR "The unique compiler supported is MSVC")
 endif()
 
+
+#set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /Zc:wchar_t")
 set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /wd4503 /wd4251")
 set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /bigobj") # Increases number of sections that an object file can contain
 set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /MP") # Multi-threaded compilations.

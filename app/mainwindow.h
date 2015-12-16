@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QMainWindow>
 #include "pathreader.h"
+#include <QMainWindow>
 
 namespace Ui {
 class MainWindow;
 }
-class CPathReader;
 
 class MainWindow : public QMainWindow
 {
@@ -21,6 +20,6 @@ private slots:
 
 private:
 	Ui::MainWindow *ui;
-	CPathReader     m_reader;
+//	CPathReader     m_reader;
 	StringListT     m_pathList;
 };
