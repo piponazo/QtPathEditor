@@ -27,12 +27,9 @@
 #pragma once
 
 #include "PathLib_export.h"
+#include "types.h"
 
 #include <windows.h>
-#include <string>
-#include <vector>
-
-typedef std::vector<std::wstring> StringListT;
 
 /// Class for managing the list of environment paths
 class PATHLIB_EXPORT CPathReader

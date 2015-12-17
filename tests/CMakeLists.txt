@@ -8,7 +8,6 @@ elseif(BUILD_TESTS)
     include_directories(${PROJECT_SOURCE_DIR}/src)      # including the library headers
     include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})   # including the Gtest headers
 
-#    add_subdirectory(libForExtensibleFactory)
     add_subdirectory(unitary)
 
     # Generate a single application including all the tests

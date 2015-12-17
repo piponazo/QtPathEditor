@@ -25,39 +25,12 @@
  */
 
 #include "PathReader.h"
+#include "string_functions.h"
 
 #include <memory>
-#include <sstream>
-#include <regex>
 
 // Registry value types:
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884(v=vs.85).aspx
-
-StringListT split_string_by( const std::wstring& sInput, wchar_t wcSeparator)
-{
-	// tokenize using RegExp
-	StringListT strList;
-	std::wostringstream ss;
-	ss << L"[^" << wcSeparator << L"]+";
-	std::wregex reSeparator( ss.str());
-
-	std::wsregex_token_iterator begin( sInput.begin(), sInput.end(), reSeparator);
-	std::wsregex_token_iterator end;
-
-	std::copy( begin, end, std::back_inserter( strList));
-	strList.erase(std::remove_if(strList.begin(), strList.end(), [](const std::wstring str){
-		return str.empty() || str[0] == 0; }), strList.end());
-	return strList;
-}
-
-std::wstring join_vector_by( const StringListT& strList, wchar_t wcSeparator)
-{
-	std::wstring sSeparator( 1, wcSeparator);
-	std::wostringstream ss;
-	std::copy( strList.begin(), strList.end(), std::ostream_iterator<StringListT::value_type,
-			   StringListT::value_type::value_type>( ss, sSeparator.c_str()));
-	return ss.str();
-}
 
 CPathReader::CPathReader(HKEY hKey, LPCTSTR keyName, LPCTSTR valueName) :
 	m_keyHandle( hKey)       // HKEY_CURRENT_USER
@@ -90,7 +63,7 @@ bool CPathReader::Read( StringListT& strList)
 	if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, lpBuffer, &nChars) != ERROR_SUCCESS)
 		return false;
 
-	strList = split_string_by( sBuffer, L';');
+	strList = fromRegistryString(sBuffer, L';');
 	return true;
 }
 
@@ -101,7 +74,7 @@ bool CPathReader::Write( const StringListT& strList)
 		return false;
 	std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
 
-	std::wstring strValue = join_vector_by( strList, L';');
+	std::wstring strValue = toRegistryString(strList, L';');
 	const BYTE* lpcBuffer = reinterpret_cast<const BYTE*>( strValue.c_str());
 	DWORD cbData = static_cast<DWORD>( strValue.size() * sizeof(wchar_t));
 	LSTATUS lStatus = RegSetValueEx( hPathKey, m_valueName, 0, REG_EXPAND_SZ, lpcBuffer, cbData);
