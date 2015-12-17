@@ -34,17 +34,18 @@
 
 typedef std::vector<std::wstring> StringListT;
 
+/// Class for managing the list of environment paths
 class PATHLIB_EXPORT CPathReader
 {
 public:
 	bool Read( StringListT& strList);
 	bool Write( const StringListT& strList);
 
-	CPathReader();
-	CPathReader( HKEY hKey, LPCTSTR lpszKeyName, LPCTSTR lpszValueName);
-	~CPathReader();
+	CPathReader( HKEY hKey = HKEY_CURRENT_USER,
+				 LPCTSTR keyName = L"Environment",
+				 LPCTSTR valueName = L"Path");
 
 private:
-	HKEY hKey_;
-	LPCTSTR lpszKeyName_, lpszValueName_;
+	HKEY m_keyHandle;
+	LPCTSTR m_keyName, m_valueName;
 };

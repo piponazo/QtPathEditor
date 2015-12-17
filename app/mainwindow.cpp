@@ -13,7 +13,7 @@ enum class TableColum : int
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
   , ui(new Ui::MainWindow)
-  , m_reader(HKEY_CURRENT_USER, L"Environment", L"Path")
+  , m_reader(HKEY_CURRENT_USER)
 {
 	ui->setupUi(this);
 

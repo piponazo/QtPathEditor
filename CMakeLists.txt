@@ -12,5 +12,6 @@ include(GenerateExportHeader)
 
 add_subdirectory(src)
 add_subdirectory(app)
+add_subdirectory(tests)
 
 include(cmake/printInfo.cmake             REQUIRED)
