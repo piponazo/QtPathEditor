@@ -20,6 +20,6 @@ private slots:
 
 private:
 	Ui::MainWindow *ui;
-//	CPathReader     m_reader;
+	CPathReader     m_reader;
 	StringListT     m_pathList;
 };
