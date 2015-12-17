@@ -6,10 +6,8 @@ StringListT fromRegistryString(const std::wstring &string, wchar_t separator)
 {
 	// tokenize using RegExp
 	StringListT strList;
-	std::wostringstream ss;
-	ss << L"[^" << separator << L"]+";
-	std::wregex reSeparator( ss.str());
 
+	std::wregex reSeparator(std::wstring(L"[^") + separator + std::wstring(L"]+"));
 	std::wsregex_token_iterator begin( string.begin(), string.end(), reSeparator);
 	std::wsregex_token_iterator end;
 
