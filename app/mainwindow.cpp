@@ -28,6 +28,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		QTableWidgetItem *newItem = new QTableWidgetItem(QString::fromWCharArray(path.c_str()));
 		ui->tableWidget->setItem(itemIdx++, static_cast<int>(TableColum::Path), newItem);
 	}
+
+	ui->tableWidget->setColumnWidth(static_cast<int>(TableColum::Enabled),  50);
+	ui->tableWidget->resizeColumnToContents(static_cast<int>(TableColum::Path));
+	ui->tableWidget->setColumnWidth(static_cast<int>(TableColum::Exists),   50);
 }
 
 MainWindow::~MainWindow()

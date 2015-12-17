@@ -63,7 +63,7 @@ bool CPathReader::Read( StringListT& strList)
 	if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, lpBuffer, &nChars) != ERROR_SUCCESS)
 		return false;
 
-	strList = fromRegistryString(sBuffer, L';');
+	strList = fromRegistryString(sBuffer);
 	return true;
 }
 
@@ -74,7 +74,7 @@ bool CPathReader::Write( const StringListT& strList)
 		return false;
 	std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
 
-	std::wstring strValue = toRegistryString(strList, L';');
+	std::wstring strValue = toRegistryString(strList);
 	const BYTE* lpcBuffer = reinterpret_cast<const BYTE*>( strValue.c_str());
 	DWORD cbData = static_cast<DWORD>( strValue.size() * sizeof(wchar_t));
 	LSTATUS lStatus = RegSetValueEx( hPathKey, m_valueName, 0, REG_EXPAND_SZ, lpcBuffer, cbData);
