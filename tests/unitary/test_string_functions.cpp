@@ -23,6 +23,18 @@ TEST(StringFunctionsTests, shouldSplitRegistryStringInSeveralPaths)
 	ASSERT_EQ(goodPaths, computedPaths);
 }
 
+TEST(StringFunctionsTests, shouldGetEmptyVectorWithEmptyString)
+{
+	const StringListT computedPaths = fromRegistryString(L"");
+	ASSERT_TRUE(computedPaths.empty());
+}
+
+TEST(StringFunctionsTests, shouldGetEmptyVectorWithInvalidSeparator)
+{
+	const StringListT computedPaths = fromRegistryString(goodRegString, L'_');
+	ASSERT_EQ(0, computedPaths.size());
+}
+
 TEST(StringFunctionsTests, shouldJoinSeveralPathsIntoRegistryString)
 {
 

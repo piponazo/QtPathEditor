@@ -12,8 +12,8 @@ StringListT fromRegistryString(const std::wstring &string, wchar_t separator)
 	std::wsregex_token_iterator end;
 
 	std::copy( begin, end, std::back_inserter( strList));
-	strList.erase(std::remove_if(strList.begin(), strList.end(), [](const std::wstring str){
-		return str.empty() || str[0] == 0; }), strList.end());
+	strList.erase(std::remove_if(strList.begin(), strList.end(), [&](const std::wstring str){
+		return str.empty() || str[0] == 0 || str.size() == string.size(); }), strList.end());
 	return strList;
 }
 
