@@ -20,8 +20,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	getPaths();
 
 	ui->tableWidget->setRowCount(m_paths.size());
-	connect(ui->tableWidget, SIGNAL(itemPressed(QTableWidgetItem *)),
-			this, SLOT(itemPressed(QTableWidgetItem *)));
 
 
 	const QIcon tick(":/icons/tick.png");
@@ -35,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
 		QTableWidgetItem *itemPath = new QTableWidgetItem(pathQt);
 		QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
+		itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+		itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
 
 		itemEn->setCheckState(it.value() ? Qt::Checked : Qt::Unchecked);
 		itemEn->setTextAlignment(Qt::AlignHCenter);
@@ -44,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		ui->tableWidget->setItem(itemIdxInTable,   COL_PATH, itemPath);
 		ui->tableWidget->setItem(itemIdxInTable++, COL_EXISTS, itemEx);
 	}
+
+	connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem *)),
+			this, SLOT(itemPressed(QTableWidgetItem *)));
 
 	ui->tableWidget->setColumnWidth(COL_ENABLED,  50);
 	ui->tableWidget->resizeColumnToContents(COL_PATH);
