@@ -10,6 +10,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class QTableWidgetItem;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -25,6 +27,8 @@ private slots:
 	void on_buttonAddPath_clicked();
 
 	void on_buttonSave_clicked();
+
+	void itemPressed(QTableWidgetItem *item);
 
 private:
 	void saveRegistry();

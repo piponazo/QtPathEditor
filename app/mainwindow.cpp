@@ -4,11 +4,11 @@
 #include <QFileDialog>
 #include <QDebug>
 
-enum class TableColum : int
+enum TableColum
 {
-	Enabled,
-	Path,
-	Exists
+	COL_ENABLED,
+	COL_PATH,
+	COL_EXISTS
 };
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	getPaths();
 
 	ui->tableWidget->setRowCount(m_paths.size());
+	connect(ui->tableWidget, SIGNAL(itemPressed(QTableWidgetItem *)),
+			this, SLOT(itemPressed(QTableWidgetItem *)));
+
 
 	const QIcon tick(":/icons/tick.png");
 	const QIcon cross(":/icons/cross.png");
@@ -37,14 +40,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		itemEn->setTextAlignment(Qt::AlignHCenter);
 		itemEx->setIcon(QFile::exists(pathQt) ? tick : cross);
 
-		ui->tableWidget->setItem(itemIdxInTable,   static_cast<int>(TableColum::Enabled), itemEn);
-		ui->tableWidget->setItem(itemIdxInTable,   static_cast<int>(TableColum::Path), itemPath);
-		ui->tableWidget->setItem(itemIdxInTable++, static_cast<int>(TableColum::Exists), itemEx);
+		ui->tableWidget->setItem(itemIdxInTable,   COL_ENABLED, itemEn);
+		ui->tableWidget->setItem(itemIdxInTable,   COL_PATH, itemPath);
+		ui->tableWidget->setItem(itemIdxInTable++, COL_EXISTS, itemEx);
 	}
 
-	ui->tableWidget->setColumnWidth(static_cast<int>(TableColum::Enabled),  50);
-	ui->tableWidget->resizeColumnToContents(static_cast<int>(TableColum::Path));
-	ui->tableWidget->setColumnWidth(static_cast<int>(TableColum::Exists),   50);
+	ui->tableWidget->setColumnWidth(COL_ENABLED,  50);
+	ui->tableWidget->resizeColumnToContents(COL_PATH);
+	ui->tableWidget->setColumnWidth(COL_EXISTS,   50);
 }
 
 MainWindow::~MainWindow()
@@ -55,11 +58,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::getPaths()
 {
-	StringListT     m_pathList;
-	m_reader.Read(m_pathList);
+	StringListT  listFromRegistry;
+	m_reader.Read(listFromRegistry);
 
 	// Read from the registry (all must be enabled)
-	for(const auto & path : m_pathList)
+	for(const auto & path : listFromRegistry)
 	{
 		QString pathQt = QString::fromWCharArray(path.c_str());
 		m_paths[pathQt]= true;
@@ -86,7 +89,7 @@ void MainWindow::on_buttonAddPath_clicked()
 		int rowIndex = ui->tableWidget->rowCount();
 		ui->tableWidget->insertRow(rowIndex);
 		QTableWidgetItem *newItem = new QTableWidgetItem(dir);
-		ui->tableWidget->setItem(rowIndex, static_cast<int>(TableColum::Path), newItem);
+		ui->tableWidget->setItem(rowIndex, COL_PATH, newItem);
 	}
 }
 
@@ -96,9 +99,38 @@ void MainWindow::on_buttonSave_clicked()
 	saveConfigFile();
 }
 
+void MainWindow::itemPressed(QTableWidgetItem *item)
+{
+	switch (item->column())
+	{
+	case COL_ENABLED :
+	{
+		const bool checked = item->checkState() == Qt::Checked;
+		const QString path = ui->tableWidget->item(item->row(), COL_PATH)->text();
+		m_paths[path] = checked;
+		qDebug() << "Path changed its status to: " << checked;
+		break;
+	}
+	default:
+	{
+		qDebug() << "itemPressed. Action not implemented with colum: " << item->column();
+	}
+	}
+}
+
 void MainWindow::saveRegistry()
 {
+	StringListT listToRegistry;
 
+	for(auto it = m_paths.begin(); it != m_paths.end(); ++it)
+	{
+		if (it.value())
+		{
+			listToRegistry.push_back(it.key().toStdWString());
+		}
+	}
+
+	m_reader.Write(listToRegistry);
 }
 
 void MainWindow::saveConfigFile()
