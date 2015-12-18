@@ -3,9 +3,11 @@ set(CMAKE_AUTOMOC ON)
 file(GLOB ui_files  *.ui)
 file(GLOB cpp_files *.cpp)
 
+QT4_ADD_RESOURCES(icons ${CMAKE_SOURCE_DIR}/resources/icons.qrc)
+
 QT4_WRAP_UI(ui_compiled ${ui_files})
 
-add_executable(QtPathEditor WIN32 ${cpp_files} ${ui_compiled})
+add_executable(QtPathEditor WIN32 ${cpp_files} ${ui_compiled} ${icons})
 
 target_include_directories(QtPathEditor PUBLIC  ${CMAKE_SOURCE_DIR}/src)
 target_include_directories(QtPathEditor PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

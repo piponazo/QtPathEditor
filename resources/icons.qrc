@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/tick.png</file>
+        <file>icons/cross.png</file>
+    </qresource>
+</RCC>
