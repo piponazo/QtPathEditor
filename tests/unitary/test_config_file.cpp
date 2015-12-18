@@ -17,7 +17,7 @@ namespace
 							  "E:\\Dev\\Libs\\external\\dllsDebug",
 							  "E:\\Dev\\Libs\\external\\dllsRelease"};
 
-	QBitArray pathsStatus (6, false);
+	QBitArray goodStatuses (6, false);
 }
 
 class ConfigFileTestsReading : public ::testing::Test
@@ -30,13 +30,16 @@ protected:
 
 		settingsFile = settings.fileName();
 
-		pathsStatus[1] = true;
-		pathsStatus[3] = true;
-		pathsStatus[5] = true;
+		goodStatuses[0] = false;
+		goodStatuses[1] = true;
+		goodStatuses[2] = false;
+		goodStatuses[3] = true;
+		goodStatuses[4] = false;
+		goodStatuses[5] = true;
 
-		EXPECT_EQ(goodPaths.size(), pathsStatus.size());
+		EXPECT_EQ(goodPaths.size(), goodStatuses.size());
 		settings.setValue("paths", goodPaths);
-		settings.setValue("status", pathsStatus);
+		settings.setValue("status", goodStatuses);
 	}
 
 	void TearDown()
@@ -58,7 +61,18 @@ TEST_F(ConfigFileTestsReading, shouldObtainStatusList)
 {
 	ConfigFile config ("Test");
 	QBitArray status = config.getStatus();
-	EXPECT_EQ(pathsStatus, status);
+	EXPECT_EQ(6, status.size());
+	EXPECT_EQ(goodStatuses, status);
+}
+
+TEST_F(ConfigFileTestsReading, shouldNotHaveTheSameStatuses)
+{
+	ConfigFile config ("Test");
+	QBitArray status = config.getStatus();
+	QBitArray badStatuses (6, false);
+
+	EXPECT_EQ(6, status.size());
+	EXPECT_NE(badStatuses, status);
 }
 
 class ConfigFileTestsWriting : public ::testing::Test

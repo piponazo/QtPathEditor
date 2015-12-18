@@ -14,28 +14,26 @@ enum class TableColum : int
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
   , ui(new Ui::MainWindow)
   , m_reader(HKEY_CURRENT_USER)
+  , m_config("QtPathEditor")
 {
 	ui->setupUi(this);
+	getPaths();
 
-	m_reader.Read(m_pathList);
-	m_pathList.push_back(L"C:\\PathInventado");
+	ui->tableWidget->setRowCount(m_paths.size());
+
+	const QIcon tick(":/icons/tick.png");
+	const QIcon cross(":/icons/cross.png");
 	int itemIdxInTable = 0;
 
-	qDebug() << "paths detected: " << m_pathList.size();
-	ui->tableWidget->setRowCount(static_cast<int>(m_pathList.size()));
-
-	QIcon tick(":/icons/tick.png");
-	QIcon cross(":/icons/cross.png");
-
-	for(const auto & path : m_pathList)
+	for(auto it = m_paths.begin(); it != m_paths.end(); ++it)
 	{
-		QString pathQt = QString::fromWCharArray(path.c_str());
+		QString pathQt = it.key();
 
 		QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
 		QTableWidgetItem *itemPath = new QTableWidgetItem(pathQt);
 		QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
 
-		itemEn->setCheckState(Qt::Checked);
+		itemEn->setCheckState(it.value() ? Qt::Checked : Qt::Unchecked);
 		itemEn->setTextAlignment(Qt::AlignHCenter);
 		itemEx->setIcon(QFile::exists(pathQt) ? tick : cross);
 
@@ -52,6 +50,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 MainWindow::~MainWindow()
 {
 	delete ui;
+
+}
+
+void MainWindow::getPaths()
+{
+	StringListT     m_pathList;
+	m_reader.Read(m_pathList);
+
+	// Read from the registry (all must be enabled)
+	for(const auto & path : m_pathList)
+	{
+		QString pathQt = QString::fromWCharArray(path.c_str());
+		m_paths[pathQt]= true;
+	}
+
+	// Read from the config file (it can override the status of the previous paths)
+	const QStringList paths    = m_config.getPaths();
+	const QBitArray   statuses = m_config.getStatus();
+	Q_ASSERT (paths.size() == statuses.size());
+
+	for (int i = 0; i < paths.size(); ++i)
+	{
+		m_paths[paths[i]] = statuses[i];
+	}
 }
 
 void MainWindow::on_buttonAddPath_clicked()
