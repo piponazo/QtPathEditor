@@ -49,8 +49,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+	on_buttonSave_clicked();
 	delete ui;
-
 }
 
 void MainWindow::getPaths()
@@ -88,4 +88,29 @@ void MainWindow::on_buttonAddPath_clicked()
 		QTableWidgetItem *newItem = new QTableWidgetItem(dir);
 		ui->tableWidget->setItem(rowIndex, static_cast<int>(TableColum::Path), newItem);
 	}
+}
+
+void MainWindow::on_buttonSave_clicked()
+{
+	saveRegistry();
+	saveConfigFile();
+}
+
+void MainWindow::saveRegistry()
+{
+
+}
+
+void MainWindow::saveConfigFile()
+{
+	m_config.setPaths(m_paths.keys());
+
+	const auto statuses = m_paths.values();
+	QBitArray array (statuses.size());
+	for (int i = 0; i < statuses.size(); ++i)
+	{
+		array.setBit(i, statuses[i]);
+	}
+
+	m_config.setStatus(array);
 }

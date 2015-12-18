@@ -24,7 +24,12 @@ public:
 private slots:
 	void on_buttonAddPath_clicked();
 
+	void on_buttonSave_clicked();
+
 private:
+	void saveRegistry();
+	void saveConfigFile();
+
 	Ui::MainWindow *ui;
 
 	CPathReader     m_reader;
