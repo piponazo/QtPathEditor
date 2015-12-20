@@ -221,5 +221,10 @@ void MainWindow::on_buttonAddPath_clicked()
 
 void MainWindow::on_buttonDeletePath_clicked()
 {
+	const int dataIndex = m_indexes[ui->tableWidget->currentRow()];
+	m_paths.erase(m_paths.begin() + m_indexes[dataIndex]);
+	m_statuses.erase(m_statuses.begin() + m_indexes[dataIndex]);
+	m_indexes.erase(m_indexes.begin() + dataIndex);
+	ui->tableWidget->removeRow(ui->tableWidget->currentRow());
 
 }
