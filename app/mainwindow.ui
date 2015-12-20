@@ -23,6 +23,9 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QTableWidget" name="tableWidget">
+      <property name="dragEnabled">
+       <bool>false</bool>
+      </property>
       <column>
        <property name="text">
         <string>Enabled</string>

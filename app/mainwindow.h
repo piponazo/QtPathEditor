@@ -43,4 +43,5 @@ private:
 	ConfigFile      m_config;
 
 	QMap<QString, bool> m_paths; ///< Path + status (enabled/disabled)
+	QMap<QString, int>  m_order; ///< Path + order
 };

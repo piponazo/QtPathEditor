@@ -22,6 +22,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	getPaths();
 
 	ui->tableWidget->setRowCount(m_paths.size());
+//	ui->tableWidget->horizontalHeader()->setMovable(true);
+//	ui->tableWidget->horizontalHeader()->setDragEnabled(true);
+//	ui->tableWidget->horizontalHeader()->setDragDropMode(QAbstractItemView::InternalMove);
+
+	ui->tableWidget->verticalHeader()->setMovable(true);
+	ui->tableWidget->verticalHeader()->setDragEnabled(true);
+	ui->tableWidget->verticalHeader()->setDragDropMode(QAbstractItemView::InternalMove);
 
 
 	const QIcon tick(":/icons/tick.png");
