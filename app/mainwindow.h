@@ -41,6 +41,7 @@ private slots:
 
 
 private:
+	void addPathToTable(const QString &path, const bool enabled, const int row);
 	void setupVisualAspect();
 	void makeConnections();
 	void saveRegistry();

@@ -25,34 +25,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	ui->setupUi(this);
 	getPaths();
 
-	const QIcon tick(":/icons/tick.png");
-	const QIcon cross(":/icons/cross.png");
 	ui->tableWidget->setRowCount(m_paths.size());
-
-	int itemIdxInTable = 0;
 
 	/// \todo use the indexes
 	for (int i = 0; i < m_paths.size(); ++i)
 	{
-		const QString & pathQt = m_paths[i];
-
-		QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
-		QTableWidgetItem *itemPath = new QTableWidgetItem(pathQt);
-		QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
-		itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-		itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-
-		itemEn->setCheckState(m_statuses[i] ? Qt::Checked : Qt::Unchecked);
-		itemEn->setTextAlignment(Qt::AlignHCenter);
-		itemEx->setIcon(QFile::exists(pathQt) ? tick : cross);
-
-		ui->tableWidget->setItem(itemIdxInTable,   COL_ENABLED, itemEn);
-		ui->tableWidget->setItem(itemIdxInTable,   COL_PATH, itemPath);
-		ui->tableWidget->setItem(itemIdxInTable++, COL_EXISTS, itemEx);
+		addPathToTable(m_paths[i], m_statuses[i], i);
 	}
 
 	setupVisualAspect();
 	makeConnections();
+}
+
+void MainWindow::addPathToTable(const QString &path, const bool enabled, const int row)
+{
+	QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
+	QTableWidgetItem *itemPath = new QTableWidgetItem(path);
+	QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
+	itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+	itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+
+	itemEn->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
+	itemEn->setTextAlignment(Qt::AlignHCenter);
+	itemEx->setIcon(QFile::exists(path) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
+
+	ui->tableWidget->setItem(row, COL_ENABLED,  itemEn);
+	ui->tableWidget->setItem(row, COL_PATH,     itemPath);
+	ui->tableWidget->setItem(row, COL_EXISTS,   itemEx);
 }
 
 MainWindow::~MainWindow()
@@ -167,6 +166,7 @@ void MainWindow::sectionMoved(int logicalIndex, int oldVisualIndex, int newVisua
 	qDebug() << "Section moved: " << logicalIndex << oldVisualIndex << newVisualIndex;
 }
 
+
 void MainWindow::setupVisualAspect()
 {
 	ui->tableWidget->verticalHeader()->setMovable(true);
@@ -194,28 +194,12 @@ void MainWindow::on_buttonAddPath_clicked()
 	if (!dir.isEmpty())
 	{
 		/// \todo check if the path exists?
-		const QIcon tick(":/icons/tick.png");
 		m_paths     << dir;
 		m_statuses  << true;
 		m_indexes   << (m_paths.size() - 1);
-
 		const int row = ui->tableWidget->rowCount();
-
 		ui->tableWidget->insertRow(row);
-
-		QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
-		QTableWidgetItem *itemPath = new QTableWidgetItem(dir);
-		QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
-		itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-		itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-
-		itemEn->setCheckState(Qt::Checked);
-		itemEn->setTextAlignment(Qt::AlignHCenter);
-		itemEx->setIcon(tick);
-
-		ui->tableWidget->setItem(row, COL_ENABLED,  itemEn);
-		ui->tableWidget->setItem(row, COL_PATH,     itemPath);
-		ui->tableWidget->setItem(row, COL_EXISTS,   itemEx);
+		addPathToTable(dir, true, row);
 	}
 }
 
