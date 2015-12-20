@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QDebug>
 
 enum TableColum
@@ -148,4 +150,17 @@ void MainWindow::saveConfigFile()
 	}
 
 	m_config.setStatus(array);
+}
+
+void MainWindow::on_buttonBrowse_clicked()
+{
+	const QString path = ui->tableWidget->item(ui->tableWidget->currentRow(), COL_PATH)->text();
+	if (m_paths[path])
+	{
+		QDesktopServices::openUrl(path);
+	}
+	else
+	{
+		qDebug() << "Non existing path will be not opened";
+	}
 }

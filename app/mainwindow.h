@@ -30,6 +30,9 @@ private slots:
 
 	void itemPressed(QTableWidgetItem *item);
 
+	/// Open the selected path in a new Windows Explorer
+	void on_buttonBrowse_clicked();
+
 private:
 	void saveRegistry();
 	void saveConfigFile();
