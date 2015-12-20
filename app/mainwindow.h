@@ -4,7 +4,7 @@
 #include "config_file.h"
 
 #include <QMainWindow>
-#include <QMap>
+#include <QList>
 
 namespace Ui {
 class MainWindow;
@@ -24,16 +24,25 @@ public:
 	void getPaths();
 
 private slots:
+	/// Open the selected path in a new Windows Explorer
+	void on_buttonBrowse_clicked();
+
+	/// Add a new path to the list of paths
 	void on_buttonAddPath_clicked();
+
+	/// Remove an existing path from the list of paths
+	void on_buttonDeletePath_clicked();
 
 	void on_buttonSave_clicked();
 
 	void itemPressed(QTableWidgetItem *item);
 
-	/// Open the selected path in a new Windows Explorer
-	void on_buttonBrowse_clicked();
+	void sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex);
+
 
 private:
+	void setupVisualAspect();
+	void makeConnections();
 	void saveRegistry();
 	void saveConfigFile();
 
@@ -42,6 +51,7 @@ private:
 	CPathReader     m_reader;
 	ConfigFile      m_config;
 
-	QMap<QString, bool> m_paths; ///< Path + status (enabled/disabled)
-	QMap<QString, int>  m_order; ///< Path + order
+	QList<QString>  m_paths;
+	QList<bool>     m_statuses;
+	QList<int>      m_indexes;
 };

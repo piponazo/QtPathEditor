@@ -19,6 +19,7 @@ public:
 
 	void setPaths(const QStringList &paths);
 	void setStatus(const QBitArray &status);
+	void setOrder(const QList<int> &order);
 
 private:
 	QSettings* m_settings;

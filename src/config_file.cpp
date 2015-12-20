@@ -36,3 +36,12 @@ void ConfigFile::setStatus(const QBitArray &status)
 {
 	m_settings->setValue("status", status);
 }
+
+void ConfigFile::setOrder(const QList<int> &order)
+{
+	QList<QVariant> orderVariant;
+	foreach (int idx, order) {
+		orderVariant.push_back(idx);
+	}
+	m_settings->setValue("order", orderVariant);
+}
