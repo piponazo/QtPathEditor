@@ -1,0 +1,9 @@
+#   VERSION CONFIGURATION
+
+set(VERSION_BUILD      "0.0.1"      CACHE STRING "Application version.")
+
+cmake_policy(VERSION 2.8.10)
+if (CMAKE_MAJOR_VERSION VERSION_GREATER 3
+    OR (CMAKE_MAJOR_VERSION VERSION_EQUAL 3 AND CMAKE_MINOR_VERSION VERSION_GREATER 0))
+        cmake_policy(SET CMP0054 OLD) #Remove double quotes in strings
+endif()
