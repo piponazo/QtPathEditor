@@ -10,4 +10,4 @@ add_library(PathLib SHARED ${sources})
 generate_export_header(PathLib EXPORT_FILE_NAME "${CMAKE_BINARY_DIR}/PathLib_export.h")
 
 target_include_directories(PathLib PRIVATE ${CMAKE_BINARY_DIR})
-target_link_libraries(PathLib PUBLIC Qt4::QtCore)
+target_link_libraries(PathLib PUBLIC Qt5::Core)
