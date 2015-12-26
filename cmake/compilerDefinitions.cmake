@@ -13,9 +13,6 @@ endif()
 # Windows definitions
 ##########################################
 
-# \todo check if we still need this in msvc2015
-add_definitions(-DQ_COMPILER_INITIALIZER_LISTS)
-
 add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 add_definitions(
        -DNOMINMAX
