@@ -32,8 +32,8 @@
 // Registry value types:
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884(v=vs.85).aspx
 
-CPathReader::CPathReader(HKEY hKey, LPCTSTR keyName, LPCTSTR valueName) :
-	m_keyHandle( hKey)       // HKEY_CURRENT_USER
+CPathReader::CPathReader(const HKEY hKey, const LPCTSTR keyName, const LPCTSTR valueName) :
+    m_keyHandle( hKey)       // HKEY_CURRENT_USER
   , m_keyName( keyName)      // L"Environment"
   , m_valueName( valueName)  // L"Path"
 {
@@ -41,43 +41,43 @@ CPathReader::CPathReader(HKEY hKey, LPCTSTR keyName, LPCTSTR valueName) :
 
 bool CPathReader::Read( StringListT& strList)
 {
-	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724897(v=vs.85).aspx
-	HKEY hPathKey = 0;
-	if( RegOpenKeyEx( m_keyHandle, m_keyName, 0, KEY_QUERY_VALUE, &hPathKey) != ERROR_SUCCESS)
-	{
-		return false;
-	}
-	std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724897(v=vs.85).aspx
+    HKEY hPathKey = 0;
+    if( RegOpenKeyEx( m_keyHandle, m_keyName, 0, KEY_QUERY_VALUE, &hPathKey) != ERROR_SUCCESS)
+        return false;
 
-	// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724911(v=vs.85).aspx
-	ULONG nChars = 0;
-	if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, 0, &nChars) != ERROR_SUCCESS)
-		return false;
+    std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
 
-	// empty path is not failure
-	if(nChars == 0)
-		return true;
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724911(v=vs.85).aspx
+    ULONG nChars = 0;
+    if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, 0, &nChars) != ERROR_SUCCESS)
+        return false;
 
-	std::wstring sBuffer(nChars / sizeof(wchar_t), 0);
-	LPBYTE lpBuffer = reinterpret_cast<LPBYTE>(&sBuffer[0]);
-	if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, lpBuffer, &nChars) != ERROR_SUCCESS)
-		return false;
+    // empty path is not failure
+    if(nChars == 0)
+        return true;
 
-	strList = fromRegistryString(sBuffer);
-	return true;
+    std::wstring sBuffer(nChars / sizeof(wchar_t), 0);
+    LPBYTE lpBuffer = reinterpret_cast<LPBYTE>(&sBuffer[0]);
+    if( RegQueryValueEx( hPathKey, m_valueName, 0, 0, lpBuffer, &nChars) != ERROR_SUCCESS)
+        return false;
+
+    strList = fromRegistryString(sBuffer);
+    return true;
 }
 
 bool CPathReader::Write( const StringListT& strList)
 {
-	HKEY hPathKey = 0;
-	if( RegOpenKeyEx( m_keyHandle, m_keyName, 0, KEY_SET_VALUE, &hPathKey) != ERROR_SUCCESS)
-		return false;
-	std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
+    HKEY hPathKey = 0;
+    if( RegOpenKeyEx( m_keyHandle, m_keyName, 0, KEY_SET_VALUE, &hPathKey) != ERROR_SUCCESS)
+        return false;
 
-	std::wstring strValue = toRegistryString(strList);
-	const BYTE* lpcBuffer = reinterpret_cast<const BYTE*>( strValue.c_str());
-	DWORD cbData = static_cast<DWORD>( strValue.size() * sizeof(wchar_t));
-	LSTATUS lStatus = RegSetValueEx( hPathKey, m_valueName, 0, REG_EXPAND_SZ, lpcBuffer, cbData);
-	return lStatus == ERROR_SUCCESS;
+    std::shared_ptr<void> afPathKey( hPathKey, RegCloseKey);
+
+    std::wstring strValue = toRegistryString(strList);
+    const BYTE* lpcBuffer = reinterpret_cast<const BYTE*>( strValue.c_str());
+    DWORD cbData = static_cast<DWORD>( strValue.size() * sizeof(wchar_t));
+    LSTATUS lStatus = RegSetValueEx( hPathKey, m_valueName, 0, REG_EXPAND_SZ, lpcBuffer, cbData);
+    return lStatus == ERROR_SUCCESS;
 }
 

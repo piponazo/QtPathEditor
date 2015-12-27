@@ -35,14 +35,23 @@
 class PATHLIB_EXPORT CPathReader
 {
 public:
-	bool Read( StringListT& strList);
-	bool Write( const StringListT& strList);
+    /// @brief Constructor.
+    /// @param hKey     [in] predefined root key.
+    /// @param keyName  [in] Key.
+    /// @param valueName[in] Value.
+    CPathReader( const HKEY hKey = HKEY_CURRENT_USER,
+                 const LPCTSTR keyName = L"Environment",
+                 const LPCTSTR valueName = L"Path");
 
-	CPathReader( HKEY hKey = HKEY_CURRENT_USER,
-				 LPCTSTR keyName = L"Environment",
-				 LPCTSTR valueName = L"Path");
+    /// @brief Read the paths from the registry into a list of strings.
+    /// @note  The order of the strings is the same found in the windows registry.
+    bool Read( StringListT& strList);
+
+    /// @brief Write a list of strings into the registry.
+    /// @note  The strings will be saved in the registry in the same order than in the list.
+    bool Write( const StringListT& strList);
 
 private:
-	HKEY m_keyHandle;
-	LPCTSTR m_keyName, m_valueName;
+    const HKEY m_keyHandle;
+    const LPCTSTR m_keyName, m_valueName;
 };
