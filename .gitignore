@@ -2,3 +2,4 @@ buildRelease/
 buildDebug/
 *~
 buildDebug/
+*.swp
