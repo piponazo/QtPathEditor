@@ -91,7 +91,7 @@ void MainWindow::getPaths()
         }
         else
         {
-            m_paths     << m_paths[i];
+            m_paths     << paths[i];
             m_statuses  << statuses[i];
             m_indexes   << (m_paths.size() - 1);
         }
@@ -158,7 +158,6 @@ void MainWindow::saveConfigFile()
 
 void MainWindow::assignShortcuts()
 {
-    qDebug() << "Key Delete pressed";
     QShortcut *shortcut = new QShortcut(QKeySequence("Del"), this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(on_buttonDeletePath_clicked()));
 }
