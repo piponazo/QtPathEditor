@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , m_config("QtPathEditor")
 {
     ui->setupUi(this);
+    removeToolBar(ui->mainToolBar);
+
     getPaths();
 
     ui->tableWidget->setRowCount(m_paths.size());
