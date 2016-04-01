@@ -54,6 +54,6 @@ private:
     ConfigFile      m_config;
 
     QList<QString>  m_paths;
-    QList<bool>     m_statuses;
+    QList<int>      m_statuses;
     QList<int>      m_indexes;
 };

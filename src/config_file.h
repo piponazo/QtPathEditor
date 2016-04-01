@@ -32,7 +32,7 @@ public:
     QStringList getPaths() const;
 
     /// @brief Gets the array of statuses for each path.
-    QBitArray   getStatus() const;
+    QList<int>   getStatus() const;
 
     /// @brief Gets the order for each path in which they should be shown in the UI.
     QList<int>  getOrder() const;
@@ -48,7 +48,7 @@ public:
     void setPaths(const QStringList &paths);
 
     /// @brief Writes the list of statuses for each path.
-    void setStatus(const QBitArray &status);
+    void setStatus(const QList<int> &status);
 
     /// @brief Writes the order configured for each path.
     void setOrder(const QList<int> &order);

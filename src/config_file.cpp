@@ -17,9 +17,20 @@ QStringList ConfigFile::getPaths() const
     return m_settings->value("paths", QStringList()).toStringList();
 }
 
-QBitArray ConfigFile::getStatus() const
+QList<int> ConfigFile::getStatus() const
 {
-    return m_settings->value("status").toBitArray();
+    QList<QVariant> tmp = m_settings->value("status").toList();
+    QList<int> list;
+    bool ok;
+    foreach (QVariant idx, tmp)
+    {
+        list.push_back(idx.toInt(&ok));
+        if (!ok)
+        {
+            throw std::runtime_error("Wrong 'status' list of integers in the config file");
+        }
+    }
+    return list;
 }
 
 QList<int> ConfigFile::getOrder() const
@@ -48,9 +59,14 @@ void ConfigFile::setPaths(const QStringList &paths)
     m_settings->setValue("paths", paths);
 }
 
-void ConfigFile::setStatus(const QBitArray &status)
+void ConfigFile::setStatus(const QList<int> &status)
 {
-    m_settings->setValue("status", status);
+    QList<QVariant> statusVariant;
+    foreach (int idx, status)
+    {
+        statusVariant.push_back(idx);
+    }
+    m_settings->setValue("status", statusVariant);
 }
 
 void ConfigFile::setOrder(const QList<int> &order)

@@ -17,8 +17,7 @@ namespace
                               "E:\\Dev\\Libs\\external\\dllsDebug",
                               "E:\\Dev\\Libs\\external\\dllsRelease"};
 
-    QBitArray goodStatuses (6, false);
-
+    const QList<QVariant> goodStatuses {0, 1, 0, 1, 0, 1};
     const QList<QVariant> goodOrder {0, 2, 1, 4, 5, 3};
 }
 
@@ -34,25 +33,19 @@ protected:
 
         settingsFile = settings.fileName(); // copy absolute file path
 
-        goodStatuses[0] = false;
-        goodStatuses[1] = true;
-        goodStatuses[2] = false;
-        goodStatuses[3] = true;
-        goodStatuses[4] = false;
-        goodStatuses[5] = true;
-
         EXPECT_EQ(goodPaths.size(), goodStatuses.size());
-        EXPECT_EQ(goodPaths.size(), goodStatuses.size());
+        EXPECT_EQ(goodPaths.size(), goodOrder.size());
 
-        settings.setValue("paths", goodPaths);
+        settings.setValue("paths",  goodPaths);
         settings.setValue("status", goodStatuses);
-        settings.setValue("order", goodOrder);
+        settings.setValue("order",  goodOrder);
     }
 
     static void TearDownTestCase()
     {
         EXPECT_TRUE(QFile::remove(settingsFile));
     }
+
     static QString settingsFile;
     static ConfigFile config;
 };
@@ -69,18 +62,12 @@ TEST_F(ConfigFileTestsReading, shouldObtainPathsList)
 
 TEST_F(ConfigFileTestsReading, shouldObtainStatusList)
 {
-    QBitArray status = config.getStatus();
+    QList<int> status = config.getStatus();
     EXPECT_EQ(6, status.size());
-    EXPECT_EQ(goodStatuses, status);
-}
-
-TEST_F(ConfigFileTestsReading, shouldNotHaveTheSameStatuses)
-{
-    QBitArray status = config.getStatus();
-    QBitArray badStatuses (6, false);
-
-    EXPECT_EQ(6, status.size());
-    EXPECT_NE(badStatuses, status);
+    for (int i = 0; i < status.size(); ++i)
+    {
+       EXPECT_EQ(goodStatuses[i].toInt(), status[i]);
+    }
 }
 
 TEST_F(ConfigFileTestsReading, shouldObtainOrderList)
@@ -126,8 +113,8 @@ TEST_F(ConfigFileTestsWriting, shouldWritePaths)
 
 TEST_F(ConfigFileTestsWriting, shouldWriteStatus)
 {
-    QBitArray statusConst (4, false);
-    QBitArray statusRead (4, true);
+    QList<int> statusConst ({0, 0, 0, 0, 0, 0});
+    QList<int> statusRead ({1, 1, 1, 1, 1, 1});
 
     config->setStatus(statusConst);
 

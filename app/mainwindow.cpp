@@ -74,13 +74,13 @@ void MainWindow::getPaths()
     for(int i = 0; i < static_cast<int>(listFromRegistry.size()); ++i)
     {
         m_paths     << QString::fromWCharArray(listFromRegistry[i].c_str());
-        m_statuses  << true;
+        m_statuses  << 1;
         m_indexes   << i;
     }
 
     // Read from the config file (it can override the status of the previous paths)
     const QStringList paths    = m_config.getPaths();
-    const QBitArray   statuses = m_config.getStatus();
+    const QList<int>  statuses = m_config.getStatus();
     Q_ASSERT(paths.size() == statuses.size());
 
     for(int i = 0; i < paths.size(); ++i)
@@ -147,15 +147,7 @@ void MainWindow::saveConfigFile()
 {
     m_config.setPaths(m_paths);
     m_config.setOrder(m_indexes);
-
-    QBitArray array(m_statuses.size());
-
-    for(int i = 0; i < m_statuses.size(); ++i)
-    {
-        array.setBit(i, m_statuses[i]);
-    }
-
-    m_config.setStatus(array);
+    m_config.setStatus(m_statuses);
 }
 
 void MainWindow::assignShortcuts()
