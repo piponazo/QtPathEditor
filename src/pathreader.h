@@ -31,7 +31,10 @@
 
 #include <windows.h>
 
-/// Class for managing the list of environment paths
+/// @brief Class for managing the list of environment paths.
+///
+/// Basically we can obtain a list with all the paths set in the PATH envirotnment variable & we
+/// can save a list of paths into that variable.
 class PATHLIB_EXPORT CPathReader
 {
 public:

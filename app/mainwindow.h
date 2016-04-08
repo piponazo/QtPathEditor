@@ -53,6 +53,7 @@ private:
     CPathReader     m_reader;
     ConfigFile      m_config;
 
+    // These are the variables read/write from/into the ConfigFile
     QList<QString>  m_paths;
     QList<int>      m_statuses;
     QList<int>      m_indexes;

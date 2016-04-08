@@ -67,37 +67,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::getPaths()
 {
-    StringListT  listFromRegistry;
-    m_reader.Read(listFromRegistry);
-
-    // Read from the registry (all must be enabled)
-    for(int i = 0; i < static_cast<int>(listFromRegistry.size()); ++i)
-    {
-        m_paths     << QString::fromWCharArray(listFromRegistry[i].c_str());
-        m_statuses  << 1;
-        m_indexes   << i;
-    }
+    /// \todo use orders
 
     // Read from the config file (it can override the status of the previous paths)
-    const QStringList paths    = m_config.getPaths();
-    const QList<int>  statuses = m_config.getStatus();
-    Q_ASSERT(paths.size() == statuses.size());
+    const QStringList paths = m_config.getPaths();
 
-    for(int i = 0; i < paths.size(); ++i)
+    if (!paths.empty())     // Previous configuration does not exist
     {
-        const int idx = m_paths.indexOf(paths[i]);
+        const QList<int>  statuses = m_config.getStatus();
+        const QList<int>  orders   = m_config.getOrder();
+        for(int i = 0; i < paths.size(); ++i)
+        {
+            const int idx = m_paths.indexOf(paths[i]);
 
-        if(idx != -1)  // Already in the list -> update the status
-        {
-            m_statuses[i] = statuses[i];
-        }
-        else
-        {
-            m_paths     << paths[i];
-            m_statuses  << statuses[i];
-            m_indexes   << (m_paths.size() - 1);
+            if(idx != -1)  // Already in the list -> update the status
+            {
+                m_statuses[i] = statuses[i];
+            }
+            else
+            {
+                m_paths     << paths[i];
+                m_statuses  << statuses[i];
+                m_indexes   << (m_paths.size() - 1);
+            }
         }
     }
+    else                    // Previous configuration does exist
+    {
+        StringListT  listFromRegistry;
+        m_reader.Read(listFromRegistry);
+
+        // Read from the registry (all must be enabled)
+        for(int i = 0; i < static_cast<int>(listFromRegistry.size()); ++i)
+        {
+            m_paths     << QString::fromWCharArray(listFromRegistry[i].c_str());
+            m_statuses  << 1;
+            m_indexes   << i;
+        }
+    }
+
 }
 
 void MainWindow::on_buttonSave_clicked()
