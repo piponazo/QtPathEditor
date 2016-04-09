@@ -8,9 +8,14 @@
 #include <QUrl>
 #include <QDebug>
 #include <QMessageBox>
+#include <QRegExp>
+
+#include <cstdlib>
 
 namespace
 {
+    QString getStringWithoutEnv (const QString &str);
+
     enum TableColum
     {
         COL_ENABLED,
@@ -79,7 +84,7 @@ void MainWindow::getPaths()
 
         for(int i = 0; i < paths.size(); ++i)
         {
-            m_paths     << paths[i];
+            m_paths     << getStringWithoutEnv(paths[i]);
             m_statuses  << statuses[i];
             m_indexes   << i;
         }
@@ -92,7 +97,7 @@ void MainWindow::getPaths()
         // Read from the registry (all must be enabled)
         for(int i = 0; i < static_cast<int>(listFromRegistry.size()); ++i)
         {
-            m_paths     << QString::fromWCharArray(listFromRegistry[i].c_str());
+            m_paths     << getStringWithoutEnv(QString::fromWCharArray(listFromRegistry[i].c_str()));
             m_statuses  << 1;
         }
     }
@@ -247,4 +252,19 @@ void MainWindow::on_buttonDeletePath_clicked()
     m_statuses.removeAt(idx);
     m_indexes.removeAt(idx);
     ui->tableWidget->removeRow(row);
+}
+
+namespace
+{
+    QString getStringWithoutEnv (const QString &str)
+    {
+        QRegExp rx("%(.*)%");
+        if (rx.indexIn(str) != -1)
+        {
+            QString out = str;
+            out.replace(rx, getenv(rx.cap(1).toUtf8().constData()));
+            return out;
+        }
+        return str;
+    }
 }
