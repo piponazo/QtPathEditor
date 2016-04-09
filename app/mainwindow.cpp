@@ -108,21 +108,11 @@ void MainWindow::on_buttonSave_clicked()
 
 void MainWindow::itemPressed(QTableWidgetItem *item)
 {
-    switch(item->column())
+    if (item->column() == COL_ENABLED)
     {
-        case COL_ENABLED :
-        {
-            qDebug() << "Item row :" << item->row();
-            const int row = item->data(Qt::UserRole).toInt();
-            const bool checked = item->checkState() == Qt::Checked;
-            m_statuses[row] = checked;
-            qDebug() << "Item [" << row << "] changed its status to: " << checked;
-            break;
-        }
-        default:
-        {
-            qDebug() << "itemPressed. Action not implemented with colum: " << item->column();
-        }
+        const int row = item->data(Qt::UserRole).toInt();
+        const bool checked = item->checkState() == Qt::Checked;
+        m_statuses[row] = checked;
     }
 }
 
