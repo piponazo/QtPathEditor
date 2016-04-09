@@ -17,7 +17,6 @@ namespace
         COL_PATH,
         COL_EXISTS
     };
-
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -132,6 +131,27 @@ void MainWindow::sectionMoved(int logicalIndex, int oldVisualIndex, int newVisua
     ui->tableWidget->blockSignals(false);
 }
 
+void MainWindow::copyRow()
+{
+    const int row = ui->tableWidget->currentItem()->row();
+    m_pathCopied = ui->tableWidget->item(row, COL_PATH)->text();
+}
+
+void MainWindow::pasteRow()
+{
+    if (m_pathCopied.isEmpty())
+        return;
+
+    const int row = ui->tableWidget->rowCount();
+
+    m_paths     << m_pathCopied;
+    m_statuses  << true;
+    m_indexes   << row;
+
+    ui->tableWidget->insertRow(row);
+    addPathToTable(m_pathCopied, true, row);
+}
+
 void MainWindow::saveRegistry()
 {
     StringListT listToRegistry;
@@ -155,8 +175,14 @@ void MainWindow::saveConfigFile()
 
 void MainWindow::assignShortcuts()
 {
-    QShortcut *shortcut = new QShortcut(QKeySequence("Del"), this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(on_buttonDeletePath_clicked()));
+    QShortcut *deleteRow = new QShortcut(QKeySequence("Del"), this);
+    connect(deleteRow, SIGNAL(activated()), this, SLOT(on_buttonDeletePath_clicked()));
+
+    QShortcut *copyRow = new QShortcut(QKeySequence("Ctrl+c"), this);
+    connect(copyRow, SIGNAL(activated()), this, SLOT(copyRow()));
+
+    QShortcut *pasteRow = new QShortcut(QKeySequence("Ctrl+v"), this);
+    connect(pasteRow, SIGNAL(activated()), this, SLOT(pasteRow()));
 }
 
 void MainWindow::on_buttonBrowse_clicked()

@@ -39,6 +39,10 @@ private slots:
 
     void sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex);
 
+    void copyRow();
+
+    void pasteRow();
+
 
 private:
     void addPathToTable(const QString &path, const bool enabled, const int row);
@@ -52,6 +56,7 @@ private:
 
     CPathReader     m_reader;
     ConfigFile      m_config;
+    QString         m_pathCopied;
 
     // These are the variables read/write from/into the ConfigFile
     QList<QString>  m_paths;
