@@ -220,14 +220,10 @@ void MainWindow::on_buttonAddPath_clicked()
 
 void MainWindow::on_buttonDeletePath_clicked()
 {
-    const int dataIndex = m_indexes[ui->tableWidget->currentRow()];
-    const int rowData = ui->tableWidget->currentItem()->data(Qt::UserRole).toInt();
-
-    qDebug() << "Deleting path [" << dataIndex << "]";
-    qDebug() << "Deleting path [" << rowData << "]";
-
-//    m_paths.erase(m_paths.begin() + m_indexes[dataIndex]);
-//    m_statuses.erase(m_statuses.begin() + m_indexes[dataIndex]);
-//    m_indexes.erase(m_indexes.begin() + dataIndex);
-//    ui->tableWidget->removeRow(ui->tableWidget->currentRow());
+    const int row = ui->tableWidget->currentItem()->row();
+    const int idx = ui->tableWidget->currentItem()->data(Qt::UserRole).toInt();
+    m_paths.removeAt(idx);
+    m_statuses.removeAt(idx);
+    m_indexes.removeAt(idx);
+    ui->tableWidget->removeRow(row);
 }
