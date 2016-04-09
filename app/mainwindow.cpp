@@ -7,6 +7,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDebug>
+#include <QMessageBox>
 
 namespace
 {
@@ -118,7 +119,6 @@ void MainWindow::itemPressed(QTableWidgetItem *item)
             qDebug() << "Item [" << row << "] changed its status to: " << checked;
             break;
         }
-
         default:
         {
             qDebug() << "itemPressed. Action not implemented with colum: " << item->column();
@@ -171,15 +171,18 @@ void MainWindow::assignShortcuts()
 
 void MainWindow::on_buttonBrowse_clicked()
 {
-    const int idx = m_indexes[ui->tableWidget->currentRow()];
+    const int row = ui->tableWidget->currentItem()->row();
+    const QString text = QDir::fromNativeSeparators(ui->tableWidget->item(row, COL_PATH)->text());
 
-    if(m_statuses[idx])
+    if(QFile::exists(text))
     {
-        QDesktopServices::openUrl(m_paths[idx]);
+        QDesktopServices::openUrl(QUrl::fromLocalFile(text));
     }
     else
     {
-        qDebug() << "Non existing path will be not opened";
+        QMessageBox::critical(this, "Non existing path",
+            "The path does not exist in your system. The system explorer cannot be opened with a "
+            "non-existing path");
     }
 }
 
@@ -209,10 +212,12 @@ void MainWindow::on_buttonAddPath_clicked()
 
     if(!dir.isEmpty())
     {
-        /// \todo check if the path exists?
+        const int row = ui->tableWidget->rowCount();
+
         m_paths     << dir;
         m_statuses  << true;
-        const int row = ui->tableWidget->rowCount();
+        m_indexes   << row;
+
         ui->tableWidget->insertRow(row);
         addPathToTable(dir, true, row);
     }
