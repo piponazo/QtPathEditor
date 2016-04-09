@@ -12,6 +12,9 @@
 
 #include <cstdlib>
 
+/// \todo Right now the application has too much logic inside. I should try to move all that logic
+/// to the library so I can test it properly.
+
 namespace
 {
     QString getStringWithoutEnv (const QString &str);
@@ -112,11 +115,17 @@ void MainWindow::on_buttonSave_clicked()
 
 void MainWindow::itemPressed(QTableWidgetItem *item)
 {
+    const int row = item->data(Qt::UserRole).toInt();
     if (item->column() == COL_ENABLED)
     {
-        const int row = item->data(Qt::UserRole).toInt();
         const bool checked = item->checkState() == Qt::Checked;
         m_statuses[row] = checked;
+    }
+    else if (item->column() == COL_PATH)
+    {
+        m_paths[row] = item->text();
+        ui->tableWidget->item(row, COL_EXISTS)->setIcon(
+            QFile::exists(item->text()) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
     }
 }
 
