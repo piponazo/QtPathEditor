@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::addPathToTable(const QString &path, const bool enabled, const int row)
 {
+    ui->tableWidget->blockSignals(true);
     QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
     QTableWidgetItem *itemPath = new QTableWidgetItem(path);
     QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
@@ -67,6 +68,7 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
     ui->tableWidget->setItem(row, COL_ENABLED,  itemEn);
     ui->tableWidget->setItem(row, COL_PATH,     itemPath);
     ui->tableWidget->setItem(row, COL_EXISTS,   itemEx);
+    ui->tableWidget->blockSignals(false);
 }
 
 MainWindow::~MainWindow()
@@ -222,9 +224,9 @@ void MainWindow::setupVisualAspect()
     ui->tableWidget->verticalHeader()->setDragEnabled(true);
     ui->tableWidget->verticalHeader()->setDragDropMode(QAbstractItemView::InternalMove);
 
-    ui->tableWidget->setColumnWidth(COL_ENABLED,  50);
+    ui->tableWidget->setColumnWidth(COL_ENABLED,  60);
     ui->tableWidget->resizeColumnToContents(COL_PATH);
-    ui->tableWidget->setColumnWidth(COL_EXISTS,   50);
+    ui->tableWidget->setColumnWidth(COL_EXISTS,   60);
 }
 
 void MainWindow::makeConnections()
