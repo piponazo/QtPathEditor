@@ -7,16 +7,20 @@ set(EXTRA_EXE_LINKER_FLAGS_DEBUG "")
 
 #Overwrite default flags
 if (MSVC)
-   set (CMAKE_CXX_FLAGS                "/DWIN32 /D_WINDOWS /GR /EHa")
-   set (CMAKE_CXX_FLAGS_DEBUG          "/MDd /Z7 /Ob0 /Od /RTC1 /D_DEBUG")
-   set (CMAKE_CXX_FLAGS_RELEASE        "/MD /O2 /Ob2 /D NDEBUG")
-   set (CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
-   set (CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-   set (CMAKE_C_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+    # /GR   Adds code to check object types at run-time (Needed with dynamic_casts, typeid, etc)
+    # /EHa  Support asynchronous structured exception handling (SEH). TODO -> Change to /EHs or /EHsc
+    # /RTC1 Runtime error checks (https://msdn.microsoft.com/en-us/library/8wtf2dfz(v=vs.120).aspx)
+    # /Zi   Produces PDB(s). It does not affect to optimizations but it implies /debug.
+    set (CMAKE_CXX_FLAGS                "/DWIN32 /D_WINDOWS /GR /EHsc")
+    set (CMAKE_CXX_FLAGS_DEBUG          "/MDd /Zi /Ob0 /Od /RTC1 /D_DEBUG")
+    set (CMAKE_CXX_FLAGS_RELEASE        "/MD /O2 /Ob2 /D NDEBUG")
+    set (CMAKE_C_FLAGS ${CMAKE_CXX_FLAGS})
+    set (CMAKE_C_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+    set (CMAKE_C_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 
-   set (CMAKE_EXE_LINKER_FLAGS          "/machine:x64")
-   set (CMAKE_EXE_LINKER_FLAGS_RELEASE  "")
-   set (CMAKE_EXE_LINKER_FLAGS_DEBUG    "/debug")
+    set (CMAKE_EXE_LINKER_FLAGS          "/machine:x64")
+    set (CMAKE_EXE_LINKER_FLAGS_RELEASE  "")
+    set (CMAKE_EXE_LINKER_FLAGS_DEBUG    "/debug")
 else()
     message(FATAL_ERROR "The unique compiler supported is MSVC")
 endif()
@@ -25,7 +29,7 @@ endif()
 #set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /Zc:wchar_t")
 set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /wd4503 /wd4251")
 set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /bigobj") # Increases number of sections that an object file can contain
-set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /MP") # Multi-threaded compilations.
+set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /MP")     # Multi-threaded compilations.
 #It applies to compilations, bot not to linking or link-time code gen.
 
 #set(EXTRA_EXE_LINKER_FLAGS "${EXTRA_EXE_LINKER_FLAGS} /time /verbose:incr") # Debug linking times
@@ -34,18 +38,16 @@ set(EXTRA_EXE_LINKER_FLAGS_RELEASE "${EXTRA_EXE_LINKER_FLAGS_RELEASE} /NODEFAULT
 set(EXTRA_EXE_LINKER_FLAGS_DEBUG "${EXTRA_EXE_LINKER_FLAGS_DEBUG} /OPT:NOREF /OPT:NOICF /NODEFAULTLIB:MSVCRT")
 
 if (PRODUCE_BETTER_EXES)
-        set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /Gy") # package individual funcions in packaged functions (COMDATs)
-        # This is needed for /OPT. /ZI implies /Gy, but we are not using /ZI
-
-        # Produces PDBs & it implies /DEBUG, but it doesn't affect optimizations
-        set(EXTRA_C_FLAGS_RELEASE "${EXTRA_C_FLAGS_RELEASE} /Z7")
-        set(EXTRA_EXE_LINKER_FLAGS "${EXTRA_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
-        set(EXTRA_EXE_LINKER_FLAGS_RELEASE "${EXTRA_EXE_LINKER_FLAGS_RELEASE} /DEBUG") # TODO - probably can be removed
-        set(EXTRA_EXE_LINKER_FLAGS_RELEASE "${EXTRA_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
-        #Remove unreferenced functions: function level linking
+    # Produces PDBs & Remove unreferenced functions: function level linking -> disables incremental linking
+    # /Gy is necessary for /OPT
+    set(EXTRA_C_FLAGS_RELEASE "${EXTRA_C_FLAGS_RELEASE} /Zi /Gy")
+    set(EXTRA_EXE_LINKER_FLAGS_RELEASE "${EXTRA_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF,ICF")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF,ICF")
 else()
-        #It's better to disable the better EXES for the development process (faster compilations)
-        set(EXTRA_EXE_LINKER_FLAGS "${EXTRA_EXE_LINKER_FLAGS} /INCREMENTAL")
+    set(EXTRA_EXE_LINKER_FLAGS "${EXTRA_EXE_LINKER_FLAGS} /INCREMENTAL")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /INCREMENTAL")
+    set(EXTRA_EXE_LINKER_FLAGS_RELEASE "${EXTRA_EXE_LINKER_FLAGS_RELEASE} /OPT:NOREF,NOICF")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:NOREF,NOICF")
 endif()
 
 if(WARNINGS_ANSI_ISO)
