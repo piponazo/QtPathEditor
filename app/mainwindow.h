@@ -44,6 +44,8 @@ private slots:
     void pasteRow();
 
 
+    void on_pushButton_clicked();
+
 private:
     void addPathToTable(const QString &path, const bool enabled, const int row);
     void setupVisualAspect();

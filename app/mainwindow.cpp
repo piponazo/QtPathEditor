@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "editpathdialog.h"
 #include "ui_mainwindow.h"
 
 #include <QShortcut>
@@ -125,6 +126,7 @@ void MainWindow::itemPressed(QTableWidgetItem *item)
     }
     else if (item->column() == COL_PATH)
     {
+        /// \todo reuse code (EDIT BUTTON)
         m_paths[row] = item->text();
         ui->tableWidget->item(row, COL_EXISTS)->setIcon(
             QFile::exists(item->text()) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
@@ -246,6 +248,7 @@ void MainWindow::on_buttonAddPath_clicked()
     {
         const int row = ui->tableWidget->rowCount();
 
+        /// \todo this block of code is repeated, we should reuse it
         m_paths     << dir;
         m_statuses  << true;
         m_indexes   << row;
@@ -277,5 +280,20 @@ namespace
             return out;
         }
         return str;
+    }
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    const int row = ui->tableWidget->currentItem()->row();
+    auto item = ui->tableWidget->item(row, COL_PATH);
+    const QString path = item->text();
+    EditPathDialog dialog (path, this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        item->setText(dialog.getPath());
+        m_paths[row] = item->text();
+        ui->tableWidget->item(row, COL_EXISTS)->setIcon(
+            QFile::exists(item->text()) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
     }
 }
