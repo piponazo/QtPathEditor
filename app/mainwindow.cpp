@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QRegExp>
+#include <QLabel>
 
 #include <cstdlib>
 
@@ -19,6 +20,8 @@
 namespace
 {
     QString getStringWithoutEnv (const QString &str);
+    QPixmap *pixYes {nullptr};
+    QPixmap *pixNo {nullptr};
 
     enum TableColum
     {
@@ -35,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , m_config("QtPathEditor")
 {
     ui->setupUi(this);
+    pixYes = new QPixmap(":/icons/tick.png");
+    pixNo = new QPixmap(":/icons/cross.png");
+
     removeToolBar(ui->mainToolBar);
 
     getPaths();
@@ -49,6 +55,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setupVisualAspect();
     makeConnections();
     assignShortcuts();
+}
+
+MainWindow::~MainWindow()
+{
+    /// \todo detect changes and ask if the user wants to save the new configuration
+//    on_buttonSave_clicked();
+    delete pixYes;
+    delete pixNo;
+    delete ui;
 }
 
 void MainWindow::addPathToTable(const QString &path, const bool enabled, const int row)
@@ -67,24 +82,24 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
     itemEn->setTextAlignment(Qt::AlignHCenter);
     itemEx->setIcon(QFile::exists(path) ? QIcon(":/icons/tick.png") :
                                           QIcon(":/icons/cross.png"));
-    itemReg->setIcon(m_pathsReg.contains(path) ? QIcon(":/icons/tick.png") :
-                                                 QIcon(":/icons/cross.png"));
 
     itemEn->setData(Qt::UserRole, row);
     itemPath->setData(Qt::UserRole, row);
 
+    QLabel *labelExists = new QLabel;
+    labelExists->setPixmap(QFile::exists(path) ? *pixYes : *pixNo);
+    labelExists->setAlignment(Qt::AlignCenter);
+
+    QLabel *labelReg = new QLabel;
+    labelReg->setPixmap(m_pathsReg.contains(path) ? *pixYes : *pixNo);
+    labelReg->setAlignment(Qt::AlignCenter);
+
     ui->tableWidget->setItem(row, COL_ENABLED,  itemEn);
     ui->tableWidget->setItem(row, COL_PATH,     itemPath);
-    ui->tableWidget->setItem(row, COL_EXISTS,   itemEx);
-    ui->tableWidget->setItem(row, COL_REGISTRY, itemReg);
-    ui->tableWidget->blockSignals(false);
-}
+    ui->tableWidget->setCellWidget(row, COL_EXISTS,   labelExists);
+    ui->tableWidget->setCellWidget(row, COL_REGISTRY, labelReg);
 
-MainWindow::~MainWindow()
-{
-    /// \todo detect changes and ask if the user wants to save the new configuration
-//    on_buttonSave_clicked();
-    delete ui;
+    ui->tableWidget->blockSignals(false);
 }
 
 void MainWindow::getPaths()

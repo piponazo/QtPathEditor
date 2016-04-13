@@ -26,6 +26,9 @@
       <property name="dragEnabled">
        <bool>false</bool>
       </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
       <column>
        <property name="text">
         <string>Enabled</string>
@@ -34,7 +37,7 @@
         <string>Indicates if the user want to enable/disable the path into the registry</string>
        </property>
        <property name="textAlignment">
-        <set>AlignLeading|AlignVCenter</set>
+        <set>AlignCenter</set>
        </property>
       </column>
       <column>
@@ -44,6 +47,9 @@
        <property name="toolTip">
         <string>Indicates the binary path</string>
        </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
       </column>
       <column>
        <property name="text">
@@ -52,6 +58,9 @@
        <property name="toolTip">
         <string>Indicates if the path exists in your file system</string>
        </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
       </column>
       <column>
        <property name="text">
@@ -59,6 +68,9 @@
        </property>
        <property name="toolTip">
         <string>Indicates if the path is already in the PATH environment variable</string>
+       </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
        </property>
       </column>
      </widget>
