@@ -60,6 +60,8 @@ private:
     ConfigFile      m_config;
     QString         m_pathCopied;
 
+    QList<QString>  m_pathsReg;     ///< Paths readed from registry
+
     // These are the variables read/write from/into the ConfigFile
     QList<QString>  m_paths;
     QList<int>      m_statuses;

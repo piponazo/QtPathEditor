@@ -24,7 +24,8 @@ namespace
     {
         COL_ENABLED,
         COL_PATH,
-        COL_EXISTS
+        COL_EXISTS,
+        COL_REGISTRY
     };
 }
 
@@ -56,12 +57,18 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
     QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
     QTableWidgetItem *itemPath = new QTableWidgetItem(path);
     QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
+    QTableWidgetItem *itemReg  = new QTableWidgetItem(); // is in registry ?
+
     itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
     itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    itemReg->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
 
     itemEn->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
     itemEn->setTextAlignment(Qt::AlignHCenter);
-    itemEx->setIcon(QFile::exists(path) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
+    itemEx->setIcon(QFile::exists(path) ? QIcon(":/icons/tick.png") :
+                                          QIcon(":/icons/cross.png"));
+    itemReg->setIcon(m_pathsReg.contains(path) ? QIcon(":/icons/tick.png") :
+                                                 QIcon(":/icons/cross.png"));
 
     itemEn->setData(Qt::UserRole, row);
     itemPath->setData(Qt::UserRole, row);
@@ -69,6 +76,7 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
     ui->tableWidget->setItem(row, COL_ENABLED,  itemEn);
     ui->tableWidget->setItem(row, COL_PATH,     itemPath);
     ui->tableWidget->setItem(row, COL_EXISTS,   itemEx);
+    ui->tableWidget->setItem(row, COL_REGISTRY, itemReg);
     ui->tableWidget->blockSignals(false);
 }
 
@@ -82,7 +90,19 @@ MainWindow::~MainWindow()
 void MainWindow::getPaths()
 {
     // Read from the config file (it can override the status of the previous paths)
-    const QStringList paths = m_config.getPaths();
+    QStringList paths = m_config.getPaths();
+    for(int i = 0; i < paths.size(); ++i)
+    {
+        paths[i] = getStringWithoutEnv(paths[i]);
+    }
+
+    // Read from the registry (and convert them to the same format than the previous ones)
+    StringListT  listFromRegistry;
+    m_reader.Read(listFromRegistry);
+    for(size_t i = 0; i < listFromRegistry.size(); ++i)
+    {
+        m_pathsReg << getStringWithoutEnv(QString::fromWCharArray(listFromRegistry[i].c_str()));
+    }
 
     if (!paths.empty())     // Previous configuration does not exist
     {
@@ -90,20 +110,16 @@ void MainWindow::getPaths()
 
         for(int i = 0; i < paths.size(); ++i)
         {
-            m_paths     << getStringWithoutEnv(paths[i]);
+            m_paths     << paths[i];
             m_statuses  << statuses[i];
             m_indexes   << i;
         }
     }
     else                    // Previous configuration does exist
     {
-        StringListT  listFromRegistry;
-        m_reader.Read(listFromRegistry);
-
-        // Read from the registry (all must be enabled)
-        for(int i = 0; i < static_cast<int>(listFromRegistry.size()); ++i)
+        for(int i = 0; i < m_pathsReg.size(); ++i)
         {
-            m_paths     << getStringWithoutEnv(QString::fromWCharArray(listFromRegistry[i].c_str()));
+            m_paths     << m_pathsReg;
             m_statuses  << 1;
         }
     }
@@ -228,7 +244,8 @@ void MainWindow::setupVisualAspect()
 
     ui->tableWidget->setColumnWidth(COL_ENABLED,  60);
     ui->tableWidget->resizeColumnToContents(COL_PATH);
-    ui->tableWidget->setColumnWidth(COL_EXISTS,   60);
+    ui->tableWidget->setColumnWidth(COL_EXISTS,   50);
+    ui->tableWidget->setColumnWidth(COL_REGISTRY, 50);
 }
 
 void MainWindow::makeConnections()

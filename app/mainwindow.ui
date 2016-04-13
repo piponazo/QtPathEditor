@@ -30,6 +30,9 @@
        <property name="text">
         <string>Enabled</string>
        </property>
+       <property name="toolTip">
+        <string>Indicates if the user want to enable/disable the path into the registry</string>
+       </property>
        <property name="textAlignment">
         <set>AlignLeading|AlignVCenter</set>
        </property>
@@ -38,10 +41,24 @@
        <property name="text">
         <string>Path</string>
        </property>
+       <property name="toolTip">
+        <string>Indicates the binary path</string>
+       </property>
       </column>
       <column>
        <property name="text">
         <string>Exist</string>
+       </property>
+       <property name="toolTip">
+        <string>Indicates if the path exists in your file system</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Registry</string>
+       </property>
+       <property name="toolTip">
+        <string>Indicates if the path is already in the PATH environment variable</string>
        </property>
       </column>
      </widget>
