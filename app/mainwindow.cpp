@@ -43,14 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     removeToolBar(ui->mainToolBar);
 
-    getPaths();
-
-    ui->tableWidget->setRowCount(m_paths.size());
-
-    for(int i = 0; i < m_paths.size(); ++i)
-    {
-        addPathToTable(m_paths[i], m_statuses[i], i);
-    }
+    updateUI();
 
     setupVisualAspect();
     makeConnections();
@@ -71,18 +64,10 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
     ui->tableWidget->blockSignals(true);
     QTableWidgetItem *itemEn   = new QTableWidgetItem(); // enabled
     QTableWidgetItem *itemPath = new QTableWidgetItem(path);
-    QTableWidgetItem *itemEx   = new QTableWidgetItem(); // exist
-    QTableWidgetItem *itemReg  = new QTableWidgetItem(); // is in registry ?
 
     itemEn->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    itemEx->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    itemReg->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-
     itemEn->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
     itemEn->setTextAlignment(Qt::AlignHCenter);
-    itemEx->setIcon(QFile::exists(path) ? QIcon(":/icons/tick.png") :
-                                          QIcon(":/icons/cross.png"));
-
     itemEn->setData(Qt::UserRole, row);
     itemPath->setData(Qt::UserRole, row);
 
@@ -104,6 +89,11 @@ void MainWindow::addPathToTable(const QString &path, const bool enabled, const i
 
 void MainWindow::getPaths()
 {
+    m_paths.clear();
+    m_statuses.clear();
+    m_indexes.clear();
+    m_pathsReg.clear();
+
     // Read from the config file (it can override the status of the previous paths)
     QStringList paths = m_config.getPaths();
     for(int i = 0; i < paths.size(); ++i)
@@ -144,7 +134,41 @@ void MainWindow::getPaths()
 void MainWindow::on_buttonSave_clicked()
 {
     saveConfigFile();
-//    saveRegistry();
+    saveRegistry();
+    updateUI();
+}
+
+void MainWindow::saveConfigFile()
+{
+    m_config.setPaths(m_paths);
+    m_config.setStatus(m_statuses);
+}
+
+void MainWindow::saveRegistry()
+{
+    StringListT listToRegistry;
+
+    for(int i = 0; i < m_paths.size(); ++i)
+    {
+        if(m_statuses[i])
+        {
+            listToRegistry.push_back(m_paths[i].toStdWString());
+        }
+    }
+
+    m_reader.Write(listToRegistry);
+}
+
+void MainWindow::updateUI()
+{
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    getPaths();
+    ui->tableWidget->setRowCount(m_paths.size());
+    for(int i = 0; i < m_paths.size(); ++i)
+    {
+        addPathToTable(m_paths[i], m_statuses[i], i);
+    }
 }
 
 void MainWindow::itemPressed(QTableWidgetItem *item)
@@ -159,8 +183,11 @@ void MainWindow::itemPressed(QTableWidgetItem *item)
     {
         /// \todo reuse code (EDIT BUTTON)
         m_paths[row] = item->text();
-        ui->tableWidget->item(row, COL_EXISTS)->setIcon(
-            QFile::exists(item->text()) ? QIcon(":/icons/tick.png") : QIcon(":/icons/cross.png"));
+        QLabel *labelExi = dynamic_cast<QLabel *>(ui->tableWidget->cellWidget(row, COL_EXISTS));
+        QLabel *labelReg = dynamic_cast<QLabel *>(ui->tableWidget->cellWidget(row, COL_REGISTRY));
+        Q_ASSERT(labelExi && labelReg);
+        labelExi->setPixmap(QFile::exists(m_paths[row]) ? *pixYes : *pixNo);
+        labelReg->setPixmap(m_pathsReg.contains(m_paths[row]) ? *pixYes : *pixNo);
     }
 }
 
@@ -199,27 +226,6 @@ void MainWindow::pasteRow()
 
     ui->tableWidget->insertRow(row);
     addPathToTable(m_pathCopied, true, row);
-}
-
-void MainWindow::saveRegistry()
-{
-    StringListT listToRegistry;
-
-    for(int i = 0; i < m_paths.size(); ++i)
-    {
-        if(m_statuses[i])
-        {
-            listToRegistry.push_back(m_paths[i].toStdWString());
-        }
-    }
-
-    m_reader.Write(listToRegistry);
-}
-
-void MainWindow::saveConfigFile()
-{
-    m_config.setPaths(m_paths);
-    m_config.setStatus(m_statuses);
 }
 
 void MainWindow::assignShortcuts()

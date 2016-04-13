@@ -53,6 +53,7 @@ private:
     void saveRegistry();
     void saveConfigFile();
     void assignShortcuts();
+    void updateUI();
 
     Ui::MainWindow *ui;
 
