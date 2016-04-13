@@ -1,12 +1,19 @@
 # QtPathEditor
 Windows application for editing the PATH environment variable (Qt based).
 
-This application is mostly oriented for windows developers who need to manage the binary paths ofter.
-Windows has a very plain and monolitic editor in which you can edit a list of paths separated by
+This application is mostly oriented for windows developers who need to manage the binary paths often.
+Windows has a very plain and monolitic editor in which you only can edit a list of paths separated by
 semicolons. There are some free applications that improves notably the experience for handling those
 paths, but I always missed some features in such applications. This application means to be an
 open-source project covering all those missing features that windows developers have always yearned
-for (specially those coming from other Operative Systems).
+for (specially those coming from other Operative Systems, such as Linux).
+
+> Note: Windows 10 has greatly improved the PATH editor in comparison with their predecesors. However
+> this editor still have some other features that you can find interesting. 
+
+## Features
+
+TODO
 
 ## Internals
 
